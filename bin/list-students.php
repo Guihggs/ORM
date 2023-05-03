@@ -9,9 +9,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $entityManager = EntityManagerCreator::createEntityManger();
 $studentRepository = $entityManager->getRepository(Student::class);
-
-/**@var Student[] $studentList */
-$studentList = $studentRepository->findAll();
+$studentList = $studentRepository->studentsAndCourses();
 
 foreach ($studentList as $student) {
     echo "ID:  $student->id\nNome: $student->name";
@@ -38,4 +36,8 @@ foreach ($studentList as $student) {
     echo PHP_EOL . PHP_EOL;
 }
 
-echo $studentRepository->count([]) . PHP_EOL;
+$studentClass = Student::class;
+$dql = "SELECT COUNT(student) FROM $studentClass student WHERE student.phones IS EMPTY";
+$query = $entityManager->createQuery($dql)->enableResultCache(86400);
+$singleScalarResult = $query->getSingleScalarResult();
+var_dump($singleScalarResult);
